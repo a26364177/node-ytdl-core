@@ -9,14 +9,14 @@ let videos = {
   'VEVO 2'                  : 'pJk0p-98Xzc',
   'Age restricted VEVO'     : 'B3eAMGXFw1o',
   'Age restricted'          : 'BlhyROz85OU',
-  'Age restricted 2'        : 'Tzuvfy4jFwE',
   'Embed domain restricted' : 'B3eAMGXFw1o',
   'No embed allowed'        : 'GFg8BP01F5Q',
   'Offensive'               : 'hCKDsjLt_qU',
 };
 
 
-describe('Try downloading videos without mocking', () => {
+describe('Try downloading videos without mocking', function() {
+  this.retries(1);
   beforeEach(() => {
     nock.cleanAll();
     nock.enableNetConnect();
@@ -27,11 +27,11 @@ describe('Try downloading videos without mocking', () => {
   Object.keys(videos).forEach((desc) => {
     const video = videos[desc];
     describe(desc, () => {
-      it('Request status code is not 403 Forbidden', (done) => {
+      it('Request status code is 2xx', (done) => {
         const stream = ytdl(video, { debug: false });
         stream.once('response', (res) => {
-          assert.notEqual(res.statusCode, 403);
-          res.destroy();
+          stream.destroy();
+          assert.ok(200 <= res.statusCode && res.statusCode < 300);
           done();
         });
       });
